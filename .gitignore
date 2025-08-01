@@ -1,0 +1,25 @@
+# Python / FastAPI
+__pycache__/
+*.pyc
+.venv/
+
+# Node / Vite
+node_modules/
+web/.vite/
+web/dist/
+
+# Docker runtime data
+data/
+snapshots/
+secrets/
+.env
+.env.*
+!.env.example
+
+# OS/editor cruft
+.DS_Store
+Thumbs.db
+
+.vscode/
+.idea/
+.DS_Store

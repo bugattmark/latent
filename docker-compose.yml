@@ -1,0 +1,51 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: brief_api
+    environment:
+      BRIEF_DOMAIN: ${BRIEF_DOMAIN}
+      OAUTH_REDIRECT: ${OAUTH_REDIRECT}
+      DAILY_BRIEF_TIME_ICT: ${DAILY_BRIEF_TIME_ICT}
+      ALLOW_EMAIL: ${ALLOW_EMAIL}
+      ENABLE_ALERTS: ${ENABLE_ALERTS}
+      MARKET_ALERTS: ${MARKET_ALERTS}
+      REDDIT_CLIENT_ID_FILE: /run/secrets/reddit_client_id
+      REDDIT_CLIENT_SECRET_FILE: /run/secrets/reddit_client_secret
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      OPENAI_MODEL: ${OPENAI_MODEL}
+      DAILY_BUDGET_USD: ${DAILY_BUDGET_USD}
+    volumes:
+      - ./data:/app/data
+      - ./snapshots:/app/snapshots
+      - ./secrets:/run/secrets:ro
+    ports:
+      - "8000:8000"
+    command: ["uvicorn","api.main:app","--host","0.0.0.0","--port","8000"]
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: brief_worker
+    environment:
+      BRIEF_DOMAIN: ${BRIEF_DOMAIN}
+      OAUTH_REDIRECT: ${OAUTH_REDIRECT}
+      DAILY_BRIEF_TIME_ICT: ${DAILY_BRIEF_TIME_ICT}
+      ENABLE_ALERTS: ${ENABLE_ALERTS}
+      MARKET_ALERTS: ${MARKET_ALERTS}
+      AI_KEYWORDS: ${AI_KEYWORDS}
+      POLICY_KEYWORDS: ${POLICY_KEYWORDS}
+      REDDIT_CLIENT_ID_FILE: /run/secrets/reddit_client_id
+      REDDIT_CLIENT_SECRET_FILE: /run/secrets/reddit_client_secret
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      OPENAI_MODEL: ${OPENAI_MODEL}
+      DAILY_BUDGET_USD: ${DAILY_BUDGET_USD}
+    volumes:
+      - ./data:/app/data
+      - ./snapshots:/app/snapshots
+      - ./secrets:/run/secrets:ro
+    depends_on:
+      - api
+    command: ["python","-m","api.worker"]
