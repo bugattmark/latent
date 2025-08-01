@@ -1,0 +1,43 @@
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+.venv/
+venv/
+.venv-api/
+.venv-worker/
+.mypy_cache/
+.pytype/
+.pytest_cache/
+
+# Node / Vite
+node_modules/
+web/node_modules/
+web/dist/
+web/.vite/
+web/.cache/
+
+# Env & secrets
+.env
+.env.local
+web/.env.local
+secrets/
+*.key
+*.pem
+
+# Data / runtime
+data/
+*.db
+*.sqlite
+*.sqlite3
+logs/
+*.log
+
+# Docker build cache (optional)
+.cache/

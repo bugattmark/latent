@@ -1,0 +1,49 @@
+services:
+  api:
+    volumes:
+      - ./:/app
+      - pip-cache:/root/.cache/pip
+      - venv-api:/venv
+    environment:
+      UVICORN_RELOAD: "true"
+    command: >
+      sh -lc "
+        set -e
+        if [ ! -f /venv/bin/activate ]; then
+          python -m venv /venv
+          . /venv/bin/activate
+          pip install -U pip wheel
+          pip install -e .
+          pip install 'uvicorn[standard]' watchfiles
+        fi
+        . /venv/bin/activate
+        uvicorn researcherbrief.api.main:app --host 0.0.0.0 --port 8000 --reload
+      "
+
+  worker:
+    volumes:
+      - ./:/app
+      - pip-cache:/root/.cache/pip
+      - venv-worker:/venv
+    command: >
+      sh -lc "
+        set -e
+        if [ ! -f /venv/bin/activate ]; then
+          python -m venv /venv
+          . /venv/bin/activate
+          pip install -U pip wheel
+          pip install -e .
+        fi
+        . /venv/bin/activate
+        python -m researcherbrief.worker.scheduler --once
+      "
+
+  # Dev: we use Vite on the host; no nginx container
+  web:
+    deploy:
+      replicas: 0
+
+volumes:
+  pip-cache:
+  venv-api:
+  venv-worker:

@@ -1,0 +1,28 @@
+services:
+  api:
+    build: { context: ., dockerfile: Dockerfile.api }
+    env_file: .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+
+  # Run on demand (one-off) or enable via profile.
+  worker:
+    build: { context: ., dockerfile: Dockerfile.api }
+    env_file: .env
+    command: ["researcherbrief-worker"]   # append --once when you run it
+    volumes:
+      - ./data:/app/data
+    depends_on:
+      - api
+    profiles: ["worker"]                  # not started by default
+
+  # Nginx for production-like static hosting; disabled in dev.
+  web:
+    build: { context: ., dockerfile: Dockerfile.web }
+    ports:
+      - "5173:80"
+    depends_on:
+      - api
+    profiles: ["prod"]                    # only starts with --profile prod
