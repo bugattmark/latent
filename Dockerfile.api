@@ -1,11 +1,9 @@
 FROM python:3.11-slim
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PIP_NO_CACHE_DIR=1
 WORKDIR /app
-ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
-RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates && rm -rf /var/lib/apt/lists/*
-COPY api/requirements.txt ./requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
-COPY api /app/api
-RUN mkdir -p /app/data /app/snapshots
-RUN useradd -m appuser && chown -R appuser:appuser /app
-USER appuser
+RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates && rm -rf /var/lib/apt/lists/*
+COPY pyproject.toml .
+COPY researcherbrief ./researcherbrief
+RUN pip install --upgrade pip && pip install .
 EXPOSE 8000
+CMD ["researcherbrief-api"]
